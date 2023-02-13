@@ -65,6 +65,11 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/user-service:latest
           
   deploy-to-gcp:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        
     steps:
       - name: Executing remote ssh commands using password
         uses: appleboy/ssh-action@v0.1.7
