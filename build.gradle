@@ -39,7 +39,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.6.6'
 
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
+	implementation "com.google.cloud:spring-cloud-gcp-starter-secretmanager:3.2.1"
 }
 
 tasks.named('test') {

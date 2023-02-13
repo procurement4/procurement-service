@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -53,10 +55,8 @@ public class ProcurementService {
         try {
             var procurementId = UUID.fromString(procurement_id);
             var getProcurementById = procurementRepository.findById(procurementId);
-            if (getProcurementById.isEmpty()) return responseAPI.NOT_FOUND("Procurement not found", null);
-
+            if (getProcurementById.isEmpty() || getProcurementById.get().getIs_deleted().equals(true)) return responseAPI.NOT_FOUND("Procurement not found", null);
             var getProcurementDetail = procurementDetailRepository.findByProcurementId(procurementId);
-
             var detailProcurement = getProcurementDetail.stream().map(x -> modelMapper.map(x, ProcurementDetailResponse.class)).toList();
             for (var item: detailProcurement) {
                 try {
@@ -74,7 +74,6 @@ public class ProcurementService {
                     log.info(String.format("%s Error : %s" , SERVICE_NAME, ex.getMessage()));
                 }
             }
-
             var data = modelMapper.map(getProcurementById, ProcurementResponse.class);
             data.setProcurement_detail(detailProcurement);
             return responseAPI.OK("Success get data", data);
@@ -112,9 +111,7 @@ public class ProcurementService {
                 newProcurementDetail.setUpdated_by(request.getUser_id());
                 procurementDetailRepository.save(newProcurementDetail);
             }
-
-            var data = modelMapper.map(newProcurement, ProcurementResponse.class);
-            return responseAPI.OK("Success create new procurement", data);
+            return responseAPI.OK("Success create new procurement", null);
         }catch (Exception ex){
             var errMsg = String.format("Error Message : %s with Stacktrace : %s",ex.getMessage(),ex.getStackTrace());
             log.error(String.format("%s" , errMsg));
@@ -129,7 +126,7 @@ public class ProcurementService {
             if (validate.size() > 0) return responseAPI.BAD_REQUEST(validate.toString(), null);
             var procurementId = UUID.fromString(request.getId());
             var getProcurement = procurementRepository.findById(procurementId);
-            if (getProcurement.isEmpty()) return responseAPI.INTERNAL_SERVER_ERROR("Procurement not found", null);
+            if (getProcurement.isEmpty() || getProcurement.get().getIs_deleted().equals(true)) return responseAPI.INTERNAL_SERVER_ERROR("Procurement not found", null);
             var getProcurementDetail = procurementDetailRepository.findByProcurementId(procurementId);
             if (getProcurementDetail.isEmpty()) return responseAPI.INTERNAL_SERVER_ERROR("Procurement Detail not found", null);
 
