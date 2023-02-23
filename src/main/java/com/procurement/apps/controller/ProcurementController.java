@@ -45,7 +45,7 @@ public class ProcurementController {
         return ResponseEntity.status(result.getCode()).body(result);
     }
 
-    @PostMapping("/v1/procurements")
+    @PatchMapping("/v1/procurements")
     public ResponseEntity updateProcurement(@RequestBody ProcurementRequest request){
         var result = procurementService.updateProcurement(request);
         return ResponseEntity.status(result.getCode()).body(result);
