@@ -73,5 +73,6 @@ jobs:
           port: ${{ secrets.PORT }}
           script: | 
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/procurement-service:latest
-            docker rm user-service
+            docker stop procurement-service
+            docker rm procurement-service
             docker run -d --restart unless-stopped --name procurement-service -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/procurement-service:latest
